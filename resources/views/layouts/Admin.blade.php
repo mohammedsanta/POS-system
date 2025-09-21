@@ -40,6 +40,11 @@
                         المصاريف
                     </a>
 
+                    <a href="{{ route('admin.commitments.index') }}"
+                       class="hover:text-indigo-600 {{ request()->routeIs('admin.commitments.index') ? 'text-indigo-600 font-semibold' : 'text-gray-700' }}">
+                        الالتزامات
+                    </a>
+
                     <a href="{{ route('bookings.index') }}"
                        class="hover:text-indigo-600 {{ request()->routeIs('bookings.index') ? 'text-indigo-600 font-semibold' : 'text-gray-700' }}">
                         حجوزات

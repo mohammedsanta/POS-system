@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CommitmentController;
 use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\Auth\OwnerAuthController;
 use App\Http\Controllers\Auth\StaffAuthController;
@@ -171,6 +172,14 @@ Route::middleware('owner')->group(function () {
     });
 
     Route::get('/admin/expenses', [ExpenseController::class, 'indexAdmin'])->name('expenses.indexAdmin');
+
+    Route::prefix('admin')->name('admin.')->group(function() {
+        Route::resource('/commitments', CommitmentController::class);
+    });
+
+    Route::get('/admin/product-inventory', function () {
+        return view('admin.inventory.ProductInventory');
+    })->name('admin.product-inventory');
 
 });
 
