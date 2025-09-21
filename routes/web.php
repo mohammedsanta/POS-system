@@ -187,5 +187,5 @@ Route::middleware('owner')->group(function () {
 // Home Redirect
 // ============================
 Route::get('/', function () {
-    return redirect()->route('cashier.dashboard');
+    return view('welcome-login');
 });
