@@ -79,6 +79,11 @@
                        class="hover:text-indigo-600 {{ request()->routeIs('admin.products.barcodes') ? 'text-indigo-600 font-semibold' : 'text-gray-700' }}">
                         الباركود
                     </a>
+
+                    <a href="{{ route('admin.product-inventory') }}"
+                       class="hover:text-indigo-600 {{ request()->routeIs('admin.product-inventory') ? 'text-indigo-600 font-semibold' : 'text-gray-700' }}">
+                        جرد
+                    </a>
                 </nav>
 
                 {{-- الجانب الأيمن --}}

@@ -11,15 +11,12 @@ class IncreaseBarcodeQuantity extends Component
 {
     public $categories;
     public $selectedCategory = '';
-    public $products; // Collection
+    public $products;
     public $selectedProduct = '';
 
-    public $barcodes; // Collection of barcodes for selected product
+    public $barcodes;
     public $selectedBarcode = '';
     public $quantity = 1;
-
-    public $successMessage = '';
-    public $errorMessage = '';
 
     public function mount()
     {
@@ -28,17 +25,15 @@ class IncreaseBarcodeQuantity extends Component
         $this->barcodes = collect();
     }
 
-    // Search products manually by button
     public function searchProducts()
     {
-        $this->resetMessages();
         $this->selectedProduct = '';
         $this->selectedBarcode = '';
         $this->quantity = 1;
         $this->barcodes = collect();
 
         if (!$this->selectedCategory) {
-            $this->errorMessage = 'Please select a category first.';
+            session()->flash('error', 'الرجاء اختيار قسم أولاً.');
             return;
         }
 
@@ -47,67 +42,68 @@ class IncreaseBarcodeQuantity extends Component
             ->get();
 
         if ($this->products->isEmpty()) {
-            $this->errorMessage = 'No products found for this category.';
+            session()->flash('error', 'لا يوجد منتجات في هذا القسم.');
         }
     }
 
-    // Load barcodes manually by button
     public function loadBarcodes()
     {
-        $this->resetMessages();
         $this->selectedBarcode = '';
         $this->quantity = 1;
 
         if (!$this->selectedProduct) {
-            $this->errorMessage = 'Please select a product first.';
+            session()->flash('error', 'الرجاء اختيار منتج أولاً.');
             return;
         }
 
         $this->barcodes = ProductBarcode::where('product_id', $this->selectedProduct)
             ->orderBy('barcode')
             ->get();
-
-        if ($this->barcodes->isEmpty()) {
-            $this->errorMessage = 'No barcodes found for this product.';
-        }
     }
 
-    // Increase quantity of selected barcode
     public function increaseQuantity()
     {
-        $this->resetMessages();
-
-        if (!$this->selectedBarcode) {
-            $this->errorMessage = 'Please select a barcode.';
+        if (!$this->selectedProduct || $this->quantity < 1) {
+            session()->flash('error', 'الرجاء اختيار منتج وإدخال كمية صحيحة.');
             return;
         }
 
-        if (!$this->quantity || $this->quantity < 1) {
-            $this->errorMessage = 'Please enter a valid quantity.';
+        $product = Product::find($this->selectedProduct);
+        if (!$product) {
+            session()->flash('error', 'المنتج غير موجود.');
             return;
         }
 
-        $barcode = ProductBarcode::find($this->selectedBarcode);
-        if (!$barcode) {
-            $this->errorMessage = 'Selected barcode not found.';
-            return;
-        }
+        $product->stock += $this->quantity;
+        $product->save();
 
-        // Update quantity
-        $barcode->quantity += $this->quantity;
-        $barcode->save();
-
-        $this->successMessage = "Quantity updated successfully!";
-        $this->quantity = 1;
-
-        // Refresh barcodes
-        $this->loadBarcodes();
+        session()->flash('success', '✅ تم تزويد المنتج بنجاح');
+        return redirect()->route('admin.products.barcodes');
     }
 
-    private function resetMessages()
+    public function decreaseQuantity()
     {
-        $this->errorMessage = '';
-        $this->successMessage = '';
+        if (!$this->selectedProduct || $this->quantity < 1) {
+            session()->flash('error', 'الرجاء اختيار منتج وإدخال كمية صحيحة.');
+            return;
+        }
+
+        $product = Product::find($this->selectedProduct);
+        if (!$product) {
+            session()->flash('error', 'المنتج غير موجود.');
+            return;
+        }
+
+        if ($product->stock < $this->quantity) {
+            session()->flash('error', 'لا يمكن إنقاص كمية أكبر من المخزون الحالي.');
+            return;
+        }
+
+        $product->stock -= $this->quantity;
+        $product->save();
+
+        session()->flash('success', '✅ تم إنقاص الكمية بنجاح');
+        return redirect()->route('admin.products.barcodes');
     }
 
     public function render()
