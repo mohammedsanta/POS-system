@@ -13,6 +13,7 @@ class PurchaseItem extends Model
         'imei',
         'qty',
         'price',
+        'sale_price',
     ];
 
     public function purchase()

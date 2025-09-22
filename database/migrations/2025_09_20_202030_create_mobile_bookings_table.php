@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('address')->nullable();
             $table->decimal('deposit', 10, 2);
+            $table->decimal('selling_price', 10, 2)->nullable();
             $table->date('booking_date')->default(now());
             $table->timestamps();
         });

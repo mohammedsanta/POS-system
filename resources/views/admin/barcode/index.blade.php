@@ -62,7 +62,7 @@
                         <td class="border px-3 py-2">{{ $barcode->category->name ?? '-' }}</td>
                         <td class="border px-3 py-2">{{ $barcode->product->name ?? '-' }}</td>
                         <td class="border px-3 py-2">{{ $barcode->barcode }}</td>
-                        <td class="border px-3 py-2">{{ $barcode->quantity ?? '-' }}</td>
+                        <td class="border px-3 py-2">{{ $barcode->product->stock ?? '-' }}</td>
                         <td class="border px-3 py-2 space-x-2">
                             <a href="{{ route('admin.products.barcode.edit', $barcode->id) }}" 
                                class="text-blue-600 hover:underline">تعديل</a>

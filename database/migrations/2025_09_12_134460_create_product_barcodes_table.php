@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->string('barcode');
-            $table->integer('quantity')->nullable();
             $table->boolean('sold')->default(false);
             $table->timestamps();
         });

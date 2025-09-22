@@ -41,14 +41,14 @@
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
                             <td class="px-4 py-2 border">{{ $product->name }}</td>
                             <td class="px-4 py-2 border">{{ $product->brand ?? '-' }}</td>
-                            <td class="px-4 py-2 border">{{ $product->category ?? '-' }}</td>
+                            <td class="px-4 py-2 border">{{ $product->category->name ?? '-' }}</td>
                             <td class="px-4 py-2 border">{{ $product->model ?? '-' }}</td>
                             <td class="px-4 py-2 border">{{ $product->purchase_price }}</td>
                             <td class="px-4 py-2 border">{{ $product->sale_price }}</td>
                             <td class="px-4 py-2 border {{ $product->stock < 5 ? 'text-red-600 font-bold' : '' }}">
                                 {{ $product->stock }}
                             </td>
-                            <td class="px-4 py-2 border">{{ $product->supplier ?? '-' }}</td>
+                            <td class="px-4 py-2 border">{{ $product->supplier->name ?? '-' }}</td>
                             <td class="px-4 py-2 border text-center">
                                 <a href="{{ route('products.edit', $product->id) }}"
                                     class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">تعديل</a>

@@ -15,6 +15,7 @@ class MobileBooking extends Model
         'phone',
         'address',
         'deposit',
+        'selling_price',
         'booking_date',
     ];
 }

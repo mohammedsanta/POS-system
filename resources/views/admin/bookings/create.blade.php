@@ -51,6 +51,14 @@
                        class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200">
             </div>
 
+            {{-- 👇 حقل سعر البيع --}}
+            <div>
+                <label class="block mb-1 font-semibold text-gray-700">سعر البيع</label>
+                <input type="number" name="selling_price" step="0.01" value="{{ old('selling_price') }}" required
+                       class="w-full border rounded px-3 py-2 focus:ring focus:ring-blue-200"
+                       placeholder="اكتب السعر النهائي للعميل">
+            </div>
+
             <div>
                 <label class="block mb-1 font-semibold text-gray-700">تاريخ الحجز</label>
                 <input type="date" name="booking_date" value="{{ old('booking_date', date('Y-m-d')) }}" required

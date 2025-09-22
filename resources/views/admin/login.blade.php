@@ -15,7 +15,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 11c0-1.657-1.343-3-3-3S6 9.343 6 11s1.343 3 3 3 3-1.343 3-3zm6 0c0-1.657-1.343-3-3-3s-3 1.343-3 3 1.343 3 3 3 3-1.343 3-3zM6 19h12v2H6v-2z"/>
+                          d="M12 11c0-1.657-1.343-3-3-3S6 9.343 6 11s1.343 3 3 3 3-1.343 3-3zm6 0c0-1.657-1.343-3-3-3s-3 1.343-3 3 1.343 3 3 3 3 3-1.343 3-3zM6 19h12v2H6v-2z"/>
                 </svg>
             </div>
             <h1 class="text-3xl font-extrabold text-gray-800">Owner Login</h1>
@@ -51,6 +51,14 @@
         <div class="mt-6 text-center text-sm">
             <span class="text-gray-600">Don’t have an account?</span>
             <a href="{{ route('owner.signup') }}" class="text-green-600 hover:underline font-medium">Sign up</a>
+        </div>
+
+        <!-- زر التوجّه مباشرة إلى الصفحة الرئيسية -->
+        <div class="mt-4 text-center">
+            <a href="/home"
+               class="inline-block px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg shadow-sm transition">
+                ⬅ العودة للصفحة الرئيسية
+            </a>
         </div>
     </div>
 

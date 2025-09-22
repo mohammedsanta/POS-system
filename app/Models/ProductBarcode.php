@@ -13,7 +13,6 @@ class ProductBarcode extends Model
     protected $fillable = [
         'product_id',
         'category_id',
-        'quantity',
         'barcode',
     ];
 

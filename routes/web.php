@@ -34,7 +34,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest:owner')->group(function () {
     Route::get('/owner/login', [OwnerAuthController::class, 'showLogin'])->name('owner.login');
     Route::post('/owner/login', [OwnerAuthController::class, 'login']);
-    Route::get('/owner/signup', [OwnerAuthController::class, 'showSignup'])->name('owner.signup');
+    // Route::get('/owner/signup', [OwnerAuthController::class, 'showSignup'])->name('owner.signup');
+    Route::get('/owner/signup', function () {
+        return redirect('/home');
+    })->name('owner.signup');
     Route::post('/owner/signup', [OwnerAuthController::class, 'signup']);
 });
 
@@ -100,8 +103,6 @@ Route::middleware('auth:staff')->group(function () {
     });
 
     // End Return Invoices
-
-    Route::resource('/admin/bookings', MobileBookingController::class);
 
 });
 
@@ -181,11 +182,14 @@ Route::middleware('owner')->group(function () {
         return view('admin.inventory.ProductInventory');
     })->name('admin.product-inventory');
 
+    Route::resource('/admin/bookings', MobileBookingController::class);
+
+
 });
 
 // ============================
 // Home Redirect
 // ============================
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('welcome-login');
 });

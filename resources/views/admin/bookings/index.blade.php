@@ -32,6 +32,7 @@
                         <th class="px-4 py-2 border">رقم الهاتف</th>
                         <th class="px-4 py-2 border">العنوان</th>
                         <th class="px-4 py-2 border">الديبوسيت</th>
+                        <th class="px-4 py-2 border">البيع</th>
                         <th class="px-4 py-2 border">تاريخ الحجز</th>
                         <th class="px-4 py-2 border text-center">إجراءات</th>
                     </tr>
@@ -45,6 +46,7 @@
                             <td class="px-4 py-2 border">{{ $booking->phone }}</td>
                             <td class="px-4 py-2 border">{{ $booking->address ?? '-' }}</td>
                             <td class="px-4 py-2 border">ج.م {{ number_format($booking->deposit,2) }}</td>
+                            <td class="px-4 py-2 border">ج.م {{ number_format($booking->selling_price,2) }}</td>
                             <td class="px-4 py-2 border">{{ \Carbon\Carbon::parse($booking->booking_date)->format('Y-m-d') }}</td>
                             <td class="px-4 py-2 border text-center">
                                 <a href="{{ route('bookings.edit', $booking->id) }}" class="text-blue-600 hover:underline mr-2">تعديل</a>

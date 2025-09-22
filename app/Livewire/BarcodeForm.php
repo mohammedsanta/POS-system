@@ -10,31 +10,25 @@ use App\Models\ProductBarcode;
 class BarcodeForm extends Component
 {
     public $categories;
-    public $selectedCategory = '';
     public $products;
+    public $selectedCategory = '';
     public $selectedProduct = '';
 
-    public $mode = 'single'; // 'single' or 'multiple'
-    public $barcode = ''; // for single barcode
-    public $barcodes = ['']; // for multiple barcodes
-    public $quantity = null; // quantity for single barcode
-
+    public $barcode = '';
     public $errorMessage = '';
     public $successMessage = '';
 
     public function mount()
     {
         $this->categories = Category::orderBy('name')->get();
-        $this->products = collect();
+        $this->products   = collect();
     }
 
     public function updatedSelectedCategory()
     {
-        $this->products = collect();
+        $this->products        = collect();
         $this->selectedProduct = '';
-        $this->barcode = '';
-        $this->barcodes = [''];
-        $this->quantity = null;
+        $this->barcode         = '';
         $this->resetMessages();
     }
 
@@ -43,7 +37,7 @@ class BarcodeForm extends Component
         $this->resetMessages();
 
         if (!$this->selectedCategory) {
-            $this->errorMessage = 'Please select a category first.';
+            $this->errorMessage = 'اختر فئة أولاً.';
             return;
         }
 
@@ -52,20 +46,7 @@ class BarcodeForm extends Component
             ->get();
 
         if ($this->products->isEmpty()) {
-            $this->errorMessage = 'No products found for this category.';
-        }
-    }
-
-    public function addBarcodeField()
-    {
-        $this->barcodes[] = '';
-    }
-
-    public function removeBarcodeField($index)
-    {
-        if (count($this->barcodes) > 1) {
-            unset($this->barcodes[$index]);
-            $this->barcodes = array_values($this->barcodes);
+            $this->errorMessage = 'لا توجد منتجات لهذه الفئة.';
         }
     }
 
@@ -74,77 +55,43 @@ class BarcodeForm extends Component
         $this->resetMessages();
 
         if (!$this->selectedProduct) {
-            $this->errorMessage = 'Please select a product.';
+            $this->errorMessage = 'اختر منتجاً أولاً.';
             return;
         }
 
         $product = Product::find($this->selectedProduct);
-        $categoryId = $product->category_id;
-
-        if ($this->mode === 'single') {
-            $barcodeValue = trim($this->barcode);
-
-            if (empty($barcodeValue)) {
-                $this->errorMessage = 'Barcode cannot be empty.';
-                return;
-            }
-
-            if (!is_numeric($this->quantity) || $this->quantity < 1) {
-                $this->errorMessage = 'Quantity must be a number greater than 0.';
-                return;
-            }
-
-            if (ProductBarcode::where('product_id', $this->selectedProduct)
-                ->where('barcode', $barcodeValue)
-                ->exists()
-            ) {
-                $this->errorMessage = 'This barcode already exists for this product.';
-                return;
-            }
-
-            ProductBarcode::create([
-                'product_id' => $this->selectedProduct,
-                'category_id' => $categoryId,
-                'barcode' => $barcodeValue,
-                'quantity' => (int) $this->quantity,
-            ]);
-
-        } elseif ($this->mode === 'multiple') {
-            $validBarcodes = array_filter($this->barcodes, fn($b) => trim($b) !== '');
-            if (empty($validBarcodes)) {
-                $this->errorMessage = 'Please add at least one barcode.';
-                return;
-            }
-
-            foreach ($validBarcodes as $barcodeValue) {
-                if (ProductBarcode::where('product_id', $this->selectedProduct)
-                    ->where('barcode', $barcodeValue)
-                    ->exists()
-                ) {
-                    $this->errorMessage = "Barcode '$barcodeValue' already exists.";
-                    return;
-                }
-
-                ProductBarcode::create([
-                    'product_id' => $this->selectedProduct,
-                    'category_id' => $categoryId,
-                    'barcode' => $barcodeValue,
-                    'quantity' => null, // null for multiple barcode mode
-                ]);
-            }
+        if (!$product) {
+            $this->errorMessage = 'المنتج غير موجود.';
+            return;
         }
 
-        $this->successMessage = 'Barcodes added successfully!';
+        $barcodeValue = trim($this->barcode);
+        if ($barcodeValue === '') {
+            $this->errorMessage = 'أدخل الباركود.';
+            return;
+        }
+
+        if (ProductBarcode::where('product_id', $product->id)
+            ->where('barcode', $barcodeValue)
+            ->exists()
+        ) {
+            $this->errorMessage = 'هذا الباركود مسجل مسبقًا.';
+            return;
+        }
+
+        ProductBarcode::create([
+            'product_id'  => $product->id,
+            'category_id' => $product->category_id,
+            'barcode'     => $barcodeValue,
+        ]);
+
+        $this->successMessage = 'تم حفظ الباركود بنجاح!';
         $this->barcode = '';
-        $this->quantity = null;
-        $this->barcodes = [''];
-        $this->selectedProduct = '';
-        $this->products = collect();
     }
 
     private function resetMessages()
     {
-        $this->errorMessage = '';
+        $this->errorMessage   = '';
         $this->successMessage = '';
     }
 
