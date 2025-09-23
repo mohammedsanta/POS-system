@@ -6,7 +6,7 @@
     <title>Cashier System</title>
 
     {{-- Tailwind CDN or your custom CSS --}}
-    <script src="https://cdn.tailwindcss.com"></script>
+            <link href="{{ asset('css/tailwind.min.css') }}" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100">

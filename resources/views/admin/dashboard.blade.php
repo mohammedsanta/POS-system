@@ -9,17 +9,17 @@
         <section>
             <h2 class="text-2xl font-bold text-gray-800 mb-4">إحصائيات اليوم</h2>
             <div class="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المبيعات اليوم</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($salesToday, 2) }}</p>
                 </div>
 
-                <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المرتجعات اليوم</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($returnsToday, 2) }}</p>
                 </div>
 
-                <div class="bg-gradient-to-r from-rose-400 to-rose-500 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المصروفات اليوم</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($expensesToday, 2) }}</p>
                 </div>
@@ -30,17 +30,17 @@
         <section>
             <h2 class="text-2xl font-bold text-gray-800 mb-4">إحصائيات الأسبوع</h2>
             <div class="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المبيعات هذا الأسبوع</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($weeklySales, 2) }}</p>
                 </div>
 
-                <div class="bg-gradient-to-r from-rose-500 to-rose-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المرتجعات هذا الأسبوع</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($weeklyReturns, 2) }}</p>
                 </div>
 
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المصروفات هذا الأسبوع</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($weeklyExpenses, 2) }}</p>
                 </div>
@@ -49,7 +49,7 @@
 
         {{-- المنتجات منخفضة المخزون --}}
         <section>
-            <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-6 rounded-2xl shadow hover:shadow-lg transition text-center">
+            <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition text-center">
                 <h3 class="text-xl font-bold">المنتجات منخفضة المخزون</h3>
                 <p class="text-3xl mt-2 font-bold">{{ $lowStockCount }}</p>
             </div>

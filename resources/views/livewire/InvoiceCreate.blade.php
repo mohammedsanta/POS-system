@@ -41,45 +41,17 @@
         <h3 class="font-semibold mb-2">📦 المنتجات المرتبطة بالفئة</h3>
         <ul class="mb-4">
             @foreach($products as $product)
-                @php
-                    $allBarcodes   = $product->barcodes;
-                    $unsoldBarcodes = $allBarcodes->where('sold', false);
-                @endphp
-
                 <li class="flex justify-between items-center border-b py-2">
                     <span>{{ $product->name }} ({{ number_format($product->sale_price,2) }} ج)</span>
 
                     <div class="flex gap-2 items-center">
-                        {{-- منتج له باركودات --}}
-                        @if($allBarcodes->count() > 0)
-                            {{-- يوجد باركودات غير مباعة --}}
-                            @if($unsoldBarcodes->count() > 0)
-                                <button wire:click="loadBarcodes({{ $product->id }})"
-                                        class="px-2 py-1 bg-gray-200 rounded text-gray-700 text-sm">
-                                    اختر الباركود
-                                </button>
-
-                                @if(isset($selectedProductBarcodes[$product->id]) && $selectedProductBarcodes[$product->id])
-                                    <select wire:model="selectedBarcodeId.{{ $product->id }}"
-                                            class="border rounded px-2 py-1 text-sm">
-                                        <option value="">-- اختر --</option>
-                                        @foreach($selectedProductBarcodes[$product->id] as $barcode)
-                                            <option value="{{ $barcode->id }}">{{ $barcode->barcode }}</option>
-                                        @endforeach
-                                    </select>
-                                @endif
-
-                                <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
-                                        wire:click="addToInvoice({{ $product->id }})">
-                                    أضف للفاتورة
-                                </button>
-                            @else
-                                <span class="text-red-500 text-sm">تم بيع جميع النسخ</span>
-                            @endif
-
-                        {{-- منتج بدون باركودات --}}
+                        @if($product->stock > 0)
+                            <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                                    wire:click="addToInvoice({{ $product->id }})">
+                                أضف للفاتورة
+                            </button>
                         @else
-                            <span class="text-gray-500 text-sm">غير متاح بالمخزون</span>
+                            <span class="text-red-500 text-sm">غير متاح بالمخزون</span>
                         @endif
                     </div>
                 </li>
@@ -116,8 +88,13 @@
                                    wire:change="updateQty('{{ $key }}', $event.target.value)"
                                    value="{{ $item['qty'] }}">
                         </td>
-                        <td class="p-2">{{ number_format($item['price'],2) }}</td>
-                        <td class="p-2">{{ number_format($item['price'] * $item['qty'],2) }}</td>
+                        <td class="p-2">
+                            <input type="number" step="0.01" min="0"
+                                   class="w-24 text-center border rounded"
+                                   wire:change="updatePrice('{{ $key }}', $event.target.value)"
+                                   value="{{ number_format($item['price'], 2) }}">
+                        </td>
+                        <td class="p-2">{{ number_format($item['price'] * $item['qty'], 2) }}</td>
                         <td class="p-2 text-center">
                             <button wire:click="removeItem('{{ $key }}')"
                                     class="text-red-600 hover:underline">
@@ -127,6 +104,7 @@
                     </tr>
                 @endforeach
             </tbody>
+
             <tfoot class="bg-gray-50 font-bold">
                 <tr>
                     <td colspan="4" class="p-2 text-right">الإجمالي الكلي</td>

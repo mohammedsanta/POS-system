@@ -5,7 +5,6 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductBarcode;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 
@@ -14,21 +13,17 @@ class InvoiceCreate extends Component
     public $categories;
     public $customerName;
     public $selectedCategory = '';
-    public $products;                   
-    public $selectedProductBarcodes = []; 
-    public $selectedBarcodeId = [];       
-    public $invoiceItems = [];            
+    public $products;
+    public $invoiceItems = [];
     public $grandTotal = 0;
     public $barcodeInput = '';
     public $errorMessage = '';
 
     public function mount()
     {
-        $this->categories              = Category::orderBy('name')->get();
-        $this->products                = collect();
-        $this->invoiceItems            = [];
-        $this->selectedProductBarcodes = [];
-        $this->selectedBarcodeId       = [];
+        $this->categories = Category::orderBy('name')->get();
+        $this->products   = collect();
+        $this->invoiceItems = [];
     }
 
     private function getNextInvoiceNumber(): int
@@ -44,7 +39,6 @@ class InvoiceCreate extends Component
 
         if ($this->selectedCategory) {
             $this->products = Product::where('category_id', $this->selectedCategory)
-                ->with('barcodes')
                 ->orderBy('name')
                 ->get();
 
@@ -57,18 +51,6 @@ class InvoiceCreate extends Component
         }
     }
 
-    /** تحميل الباركودات المتاحة لمنتج */
-    public function loadBarcodes($productId)
-    {
-        $barcodes = ProductBarcode::where('product_id', $productId)
-            ->where(function ($q) {
-                $q->whereNull('sold')->orWhere('sold', false);
-            })
-            ->get();
-
-        $this->selectedProductBarcodes[$productId] = $barcodes->count() ? $barcodes : null;
-    }
-
     /** إضافة منتج للفاتورة */
     public function addToInvoice($productId)
     {
@@ -78,40 +60,26 @@ class InvoiceCreate extends Component
             return;
         }
 
-        // كل الباركودات
-        $allBarcodes = ProductBarcode::where('product_id', $productId)->get();
-        $unsold      = $allBarcodes->where(fn($b) => !$b->sold);
-
-        // لو المنتج مرتبط بباركودات لكن كلها مباعة
-        if ($allBarcodes->count() > 0 && $unsold->count() === 0) {
-            $this->errorMessage = 'تم بيع جميع النسخ من هذا المنتج.';
+        if ($product->stock <= 0) {
+            $this->errorMessage = 'هذا المنتج غير متاح في المخزون.';
             return;
         }
 
-        // لو المنتج ملوش باركود أصلاً → لا يمكن إضافته (لا يوجد مخزون)
-        if ($allBarcodes->count() === 0) {
-            $this->errorMessage = 'هذا المنتج غير متاح بالمخزون.';
-            return;
-        }
-
-        // لو فيه باركودات غير مباعة لازم يختار
-        $barcodeId = $this->selectedBarcodeId[$productId] ?? null;
-        if (!$barcodeId) {
-            $this->errorMessage = 'اختر الباركود للمنتج قبل إضافته.';
-            return;
-        }
-
-        $key = $barcodeId;
+        $key = $product->id;
 
         if (isset($this->invoiceItems[$key])) {
-            $this->invoiceItems[$key]['qty']++;
+            if ($this->invoiceItems[$key]['qty'] < $product->stock) {
+                $this->invoiceItems[$key]['qty']++;
+            } else {
+                $this->errorMessage = 'لا توجد كمية كافية من هذا المنتج في المخزون.';
+                return;
+            }
         } else {
             $this->invoiceItems[$key] = [
-                'product_id'  => $productId,
+                'product_id'  => $product->id,
                 'category_id' => $product->category_id,
                 'name'        => $product->name,
-                'barcode_id'  => $barcodeId,
-                'barcode'     => ProductBarcode::find($barcodeId)->barcode,
+                'barcode'     => $product->barcode,
                 'price'       => $product->sale_price,
                 'qty'         => 1,
             ];
@@ -121,27 +89,46 @@ class InvoiceCreate extends Component
         $this->errorMessage = '';
     }
 
-    /** إضافة عبر مسح باركود */
+    /** إضافة عبر الباركود */
     public function addByBarcode()
     {
         $this->errorMessage = '';
         if (!$this->barcodeInput) return;
 
-        $barcode = ProductBarcode::where('barcode', $this->barcodeInput)->first();
+        $product = Product::where('barcode', $this->barcodeInput)->first();
 
-        if (!$barcode) {
+        if (!$product) {
             $this->errorMessage = 'هذا الباركود غير موجود.';
             return;
         }
 
-        if ($barcode->sold) {
-            $this->errorMessage = 'هذا الباركود تم بيعه من قبل.';
+        if ($product->stock <= 0) {
+            $this->errorMessage = 'هذا المنتج غير متاح في المخزون.';
             return;
         }
 
-        $this->selectedBarcodeId[$barcode->product_id] = $barcode->id;
-        $this->addToInvoice($barcode->product_id);
+        $key = $product->id;
 
+        if (isset($this->invoiceItems[$key])) {
+            if ($this->invoiceItems[$key]['qty'] < $product->stock) {
+                $this->invoiceItems[$key]['qty']++;
+            } else {
+                $this->errorMessage = 'لا توجد كمية كافية من هذا المنتج في المخزون.';
+                return;
+            }
+        } else {
+            $this->invoiceItems[$key] = [
+                'product_id'  => $product->id,
+                'category_id' => $product->category_id,
+                'name'        => $product->name,
+                'barcode'     => $product->barcode,
+                'price'       => $product->sale_price,
+                'qty'         => 1,
+            ];
+        }
+
+        $this->calculateTotal();
+        $this->errorMessage = '';
         $this->barcodeInput = '';
     }
 
@@ -152,6 +139,23 @@ class InvoiceCreate extends Component
             $this->invoiceItems[$key]['qty'] = max(1, (int)$qty);
             $this->calculateTotal();
         }
+    }
+
+    /** تحديث السعر */
+    public function updatePrice($key, $newPrice)
+    {
+        $newPrice = floatval($newPrice);
+
+        if ($newPrice <= 0) {
+            $this->errorMessage = 'السعر يجب أن يكون أكبر من صفر.';
+            return;
+        }
+
+        if (isset($this->invoiceItems[$key])) {
+            $this->invoiceItems[$key]['price'] = $newPrice;
+        }
+
+        $this->calculateTotal();
     }
 
     /** حذف عنصر */
@@ -189,17 +193,17 @@ class InvoiceCreate extends Component
                     'category_id'    => $item['category_id'],
                     'product_name'   => $item['name'],
                     'customer_name'  => $this->customerName ?? null,
-                    'barcode_id'     => $item['barcode_id'],
+                    'barcode'        => $item['barcode'],
                     'qty'            => $item['qty'],
                     'price'          => $item['price'],
                     'total'          => $item['price'] * $item['qty'],
                     'sold_at'        => now(),
                 ]);
 
-                // تحديث حالة الباركود
-                if (!empty($item['barcode_id'])) {
-                    ProductBarcode::where('id', $item['barcode_id'])
-                        ->update(['sold' => true]);
+                // تحديث المخزون
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $product->decrement('stock', $item['qty']);
                 }
             }
 
@@ -207,8 +211,7 @@ class InvoiceCreate extends Component
 
             $this->reset([
                 'invoiceItems', 'barcodeInput', 'selectedCategory',
-                'products', 'selectedProductBarcodes',
-                'selectedBarcodeId', 'grandTotal', 'customerName'
+                'products', 'grandTotal', 'customerName'
             ]);
 
             session()->flash('success', 'تم إنشاء الفاتورة بنجاح!');
@@ -221,6 +224,6 @@ class InvoiceCreate extends Component
 
     public function render()
     {
-        return view('livewire.invoiceCreate');
+        return view('livewire.InvoiceCreate');
     }
 }

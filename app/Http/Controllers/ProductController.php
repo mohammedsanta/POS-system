@@ -41,8 +41,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // يجيب كل المنتجات ومعاها الباركود
-        $products = Product::with('barcodes')->latest()->get();
+        // يجيب كل المنتجات فقط من جدول products
+        $products = Product::latest()->get();
 
         return view('admin.products', compact('products'));
     }
@@ -52,9 +52,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::orderBy('name')->get();
-        $suppliers  = Supplier::orderBy('name')->get(); // Assuming you have a Supplier model
-        return view('admin.createProduct', compact('categories', 'suppliers'));
+        return view('admin.quick-insert-product');
     }
 
 
@@ -74,6 +72,8 @@ class ProductController extends Controller
             'stock'          => 'required|integer|min:0',
             'description'    => 'nullable|string',
         ]);
+
+        dd($validated);
 
         Product::create($validated);
 
@@ -109,11 +109,12 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'category_id'    => 'nullable|string|max:255',
-            'supplier_id'    => 'nullable',
+            'category_id'    => 'nullable|integer|exists:categories,id',
+            'supplier_id'    => 'nullable|integer|exists:suppliers,id',
             'name'           => 'required|string|max:255',
             'brand'          => 'nullable|string|max:255',
             'model'          => 'nullable|string|max:255',
+            'barcode'        => 'nullable|string|max:255|unique:products,barcode,' . $id,
             'purchase_price' => 'required|numeric|min:0',
             'sale_price'     => 'required|numeric|min:0',
             'stock'          => 'required|integer|min:0',
@@ -125,8 +126,9 @@ class ProductController extends Controller
 
         return redirect()
             ->route('products.index')
-            ->with('success', 'Product updated successfully.');
+            ->with('success', 'تم تحديث المنتج بنجاح.');
     }
+
 
     /**
      * Remove the specified product from storage.

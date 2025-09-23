@@ -1,11 +1,14 @@
-@extends('layouts.Admin')
+{{-- resources/views/admin/products/edit.blade.php --}}
+@extends('layouts.admin')
+
+@section('title', 'تعديل المنتج')
 
 @section('content')
 <main class="min-h-screen bg-gray-100 p-6">
     <div class="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
         <h1 class="text-2xl font-bold mb-6 text-center">تعديل المنتج</h1>
 
-        {{-- ❌ رسائل الأخطاء --}}
+        {{-- ✅ رسائل الأخطاء --}}
         @if ($errors->any())
             <div class="mb-4 p-3 rounded bg-red-100 text-red-700">
                 <ul class="list-disc list-inside">
@@ -20,18 +23,21 @@
             @csrf
             @method('PUT')
 
+            <!-- الاسم -->
             <div>
                 <label class="block text-sm font-semibold mb-1">اسم المنتج</label>
                 <input type="text" name="name" value="{{ old('name', $product->name) }}"
                        class="w-full border rounded px-3 py-2" required>
             </div>
 
+            <!-- الماركة -->
             <div>
                 <label class="block text-sm font-semibold mb-1">الماركة</label>
                 <input type="text" name="brand" value="{{ old('brand', $product->brand) }}"
                        class="w-full border rounded px-3 py-2">
             </div>
 
+            <!-- التصنيف -->
             <div>
                 <label class="block text-sm font-semibold mb-1">التصنيف</label>
                 <select name="category_id" class="w-full border rounded px-3 py-2" required>
@@ -44,12 +50,21 @@
                 </select>
             </div>
 
+            <!-- الموديل -->
             <div>
                 <label class="block text-sm font-semibold mb-1">الموديل</label>
                 <input type="text" name="model" value="{{ old('model', $product->model) }}"
                        class="w-full border rounded px-3 py-2">
             </div>
 
+            <!-- الباركود -->
+            <div>
+                <label class="block text-sm font-semibold mb-1">الباركود</label>
+                <input type="text" name="barcode" value="{{ old('barcode', $product->barcode) }}"
+                       class="w-full border rounded px-3 py-2">
+            </div>
+
+            <!-- سعر الشراء -->
             <div>
                 <label class="block text-sm font-semibold mb-1">سعر الشراء</label>
                 <input type="number" name="purchase_price" step="0.01"
@@ -57,6 +72,7 @@
                        class="w-full border rounded px-3 py-2" required>
             </div>
 
+            <!-- سعر البيع -->
             <div>
                 <label class="block text-sm font-semibold mb-1">سعر البيع</label>
                 <input type="number" name="sale_price" step="0.01"
@@ -64,12 +80,14 @@
                        class="w-full border rounded px-3 py-2" required>
             </div>
 
+            <!-- المخزون -->
             <div>
                 <label class="block text-sm font-semibold mb-1">المخزون</label>
                 <input type="number" name="stock" value="{{ old('stock', $product->stock) }}"
                        class="w-full border rounded px-3 py-2" required>
             </div>
 
+            <!-- المورّد -->
             <div>
                 <label class="block text-sm font-semibold mb-1">المورّد</label>
                 <select name="supplier_id" class="w-full border rounded px-3 py-2">
@@ -82,11 +100,13 @@
                 </select>
             </div>
 
+            <!-- الوصف -->
             <div>
                 <label class="block text-sm font-semibold mb-1">الوصف</label>
                 <textarea name="description" rows="4" class="w-full border rounded px-3 py-2">{{ old('description', $product->description) }}</textarea>
             </div>
 
+            <!-- الأزرار -->
             <div class="flex justify-between items-center mt-4">
                 <a href="{{ route('products.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
                     إلغاء

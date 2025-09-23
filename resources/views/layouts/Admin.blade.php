@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'لوحة التحكم')</title>
     <link href="{{ asset('css/tailwind.min.css') }}" rel="stylesheet">
+
     @livewireStyles
     @livewireScripts
 </head>
@@ -74,10 +75,7 @@
                        class="{{ request()->routeIs('admin.product-inventory') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         الجرد
                     </a>
-                    <a href="{{ route('quick-insert-product') }}"
-                       class="{{ request()->routeIs('quick-insert-product') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
-                        إدخال سريع
-                    </a>
+
                 </nav>
 
                 {{-- الجانب الأيمن --}}

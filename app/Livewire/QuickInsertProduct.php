@@ -6,20 +6,28 @@ use Livewire\Component;
 use App\Models\Product;
 use App\Models\ProductBarcode;
 use App\Models\Category;
+use App\Models\Supplier;
 
 class QuickInsertProduct extends Component
 {
     public $categories;
+    public $suppliers;
+
     public $name;
     public $category_id;
+    public $supplier_id;
     public $barcode;
+    public $brand;
+    public $model;
     public $purchase_price;
     public $sale_price;
     public $stock;
+    public $description;
 
     public function mount()
     {
         $this->categories = Category::orderBy('name')->get();
+        $this->suppliers  = Supplier::orderBy('name')->get();
     }
 
     public function save()
@@ -27,31 +35,40 @@ class QuickInsertProduct extends Component
         $this->validate([
             'name'           => 'required|string|max:255',
             'category_id'    => 'required|exists:categories,id',
+            'supplier_id'    => 'nullable|exists:suppliers,id',
             'barcode'        => 'required|string|max:255|unique:product_barcodes,barcode',
+            'brand'          => 'nullable|string|max:255',
+            'model'          => 'nullable|string|max:255',
             'purchase_price' => 'required|numeric|min:0',
-            'sale_price'  => 'required|numeric|min:0',
+            'sale_price'     => 'required|numeric|min:0',
+            'stock'          => 'required|integer|min:0',
+            'description'    => 'nullable|string',
         ]);
 
-        // إنشاء المنتج
+        // إنشاء المنتج بكامل البيانات
         $product = Product::create([
-            'name'        => $this->name,
-            'category_id' => $this->category_id,
-            'quantity'    => 0, // يبدأ بدون مخزون
-            'purchase_price'       => $this->purchase_price,
-            'sale_price' => $this->sale_price,
-            'stock' => $this->stock,
+            'name'           => $this->name,
+            'category_id'    => $this->category_id,
+            'supplier_id'    => $this->supplier_id,
+            'barcode'     => $this->barcode,
+            'brand'          => $this->brand,
+            'model'          => $this->model,
+            'purchase_price' => $this->purchase_price,
+            'sale_price'     => $this->sale_price,
+            'stock'          => $this->stock,
+            'description'    => $this->description,
         ]);
 
         // إضافة الباركود
         ProductBarcode::create([
-            'product_id' => $product->id,
+            'product_id'  => $product->id,
             'category_id' => $this->category_id,
-            'barcode'    => $this->barcode,
-            'quantity'   => 0,
+            'barcode'     => $this->barcode,
+            'quantity'    => 0,
         ]);
 
         session()->flash('success', '✅ تم إضافة المنتج بسرعة بنجاح');
-        return redirect()->route('quick-insert-product');
+        return redirect()->route('products.index');
     }
 
     public function render()
