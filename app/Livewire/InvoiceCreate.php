@@ -89,48 +89,60 @@ class InvoiceCreate extends Component
         $this->errorMessage = '';
     }
 
-    /** إضافة عبر الباركود */
-    public function addByBarcode()
-    {
-        $this->errorMessage = '';
-        if (!$this->barcodeInput) return;
+/** إضافة عبر الباركود */
+public function addByBarcode()
+{
+    $this->errorMessage = '';
+    if (!$this->barcodeInput) return;
 
-        $product = Product::where('barcode', $this->barcodeInput)->first();
+    // رجع كل المنتجات اللي ليها نفس الباركود
+    $products = Product::where('barcode', $this->barcodeInput)->get();
 
-        if (!$product) {
-            $this->errorMessage = 'هذا الباركود غير موجود.';
-            return;
-        }
-
-        if ($product->stock <= 0) {
-            $this->errorMessage = 'هذا المنتج غير متاح في المخزون.';
-            return;
-        }
-
-        $key = $product->id;
-
-        if (isset($this->invoiceItems[$key])) {
-            if ($this->invoiceItems[$key]['qty'] < $product->stock) {
-                $this->invoiceItems[$key]['qty']++;
-            } else {
-                $this->errorMessage = 'لا توجد كمية كافية من هذا المنتج في المخزون.';
-                return;
-            }
-        } else {
-            $this->invoiceItems[$key] = [
-                'product_id'  => $product->id,
-                'category_id' => $product->category_id,
-                'name'        => $product->name,
-                'barcode'     => $product->barcode,
-                'price'       => $product->sale_price,
-                'qty'         => 1,
-            ];
-        }
-
-        $this->calculateTotal();
-        $this->errorMessage = '';
-        $this->barcodeInput = '';
+    if ($products->isEmpty()) {
+        $this->errorMessage = 'هذا الباركود غير موجود.';
+        return;
     }
+
+    if ($products->count() > 1) {
+        // لو فيه أكثر من منتج بنفس الباركود => عرضهم للمستخدم
+        $this->products = $products;
+        $this->errorMessage = 'يوجد أكثر من منتج بنفس الباركود، اختر المنتج المطلوب من القائمة.';
+        return;
+    }
+
+    // لو منتج واحد فقط
+    $product = $products->first();
+
+    if ($product->stock <= 0) {
+        $this->errorMessage = 'هذا المنتج غير متاح في المخزون.';
+        return;
+    }
+
+    $key = $product->id;
+
+    if (isset($this->invoiceItems[$key])) {
+        if ($this->invoiceItems[$key]['qty'] < $product->stock) {
+            $this->invoiceItems[$key]['qty']++;
+        } else {
+            $this->errorMessage = 'لا توجد كمية كافية من هذا المنتج في المخزون.';
+            return;
+        }
+    } else {
+        $this->invoiceItems[$key] = [
+            'product_id'  => $product->id,
+            'category_id' => $product->category_id,
+            'name'        => $product->name,
+            'barcode'     => $product->barcode,
+            'price'       => $product->sale_price,
+            'qty'         => 1,
+        ];
+    }
+
+    $this->calculateTotal();
+    $this->errorMessage = '';
+    $this->barcodeInput = '';
+}
+
 
     /** تحديث الكمية */
     public function updateQty($key, $qty)

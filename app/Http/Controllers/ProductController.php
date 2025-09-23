@@ -59,28 +59,28 @@ class ProductController extends Controller
     /**
      * Store a newly created product in storage.
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'category_id'    => 'nullable|string|max:255',
-            'supplier_id'    => 'nullable',
-            'name'           => 'required|string|max:255',
-            'brand'          => 'nullable|string|max:255',
-            'model'          => 'nullable|string|max:255',
-            'purchase_price' => 'required|numeric|min:0',
-            'sale_price'     => 'required|numeric|min:0',
-            'stock'          => 'required|integer|min:0',
-            'description'    => 'nullable|string',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'category_id'    => 'nullable|string|max:255',
+    //         'supplier_id'    => 'nullable',
+    //         'name'           => 'required|string|max:255',
+    //         'brand'          => 'nullable|string|max:255',
+    //         'model'          => 'nullable|string|max:255',
+    //         'purchase_price' => 'required|numeric|min:0',
+    //         'sale_price'     => 'required|numeric|min:0',
+    //         'stock'          => 'required|integer|min:0',
+    //         'description'    => 'nullable|string',
+    //     ]);
 
-        dd($validated);
+    //     dd($validated);
 
-        Product::create($validated);
+    //     Product::create($validated);
 
-        return redirect()
-            ->route('products.index')
-            ->with('success', 'Product created successfully.');
-    }
+    //     return redirect()
+    //         ->route('products.index')
+    //         ->with('success', 'Product created successfully.');
+    // }
 
     /**
      * Display the specified product.

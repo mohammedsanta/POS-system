@@ -1,129 +1,164 @@
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-2xl shadow">
+<div class="max-w-5xl mx-auto bg-white shadow p-6 rounded">
 
-    <h2 class="text-2xl font-bold mb-4">🧾 إنشاء فاتورة جديدة</h2>
+    {{-- رسائل --}}
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
 
-    {{-- Barcode input --}}
-    <div class="mb-4 flex gap-2 items-center">
-        <input type="text" wire:model.lazy="barcodeInput"
-               placeholder="امسح أو أدخل الباركود"
-               wire:keydown.enter="addByBarcode"
-               class="border rounded px-3 py-2 flex-1">
+    @if($errorMessage)
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded">
+            {{ $errorMessage }}
+        </div>
+    @endif
+
+    {{-- بيانات العميل --}}
+    <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">اسم العميل</label>
+        <input type="text" wire:model="customerName"
+               class="w-full border rounded px-3 py-2">
+    </div>
+
+    {{-- البحث بالباركود --}}
+    <div class="mb-4 flex gap-2">
+        <input type="text" wire:model="barcodeInput"
+               wire:keydown.enter.prevent="addByBarcode"
+               placeholder="📦 أدخل الباركود"
+               class="flex-1 border rounded px-3 py-2">
         <button wire:click="addByBarcode"
-                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-            أضف بالباركود
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+            ➕ إضافة
         </button>
     </div>
 
-    {{-- Category search --}}
-    <div class="flex gap-2 mb-4">
-        <select wire:model="selectedCategory"
-                class="border rounded px-3 py-2 flex-1">
+    {{-- اختيار الفئة والبحث --}}
+    <div class="mb-4 flex gap-2">
+        <select wire:model="selectedCategory" class="border rounded px-3 py-2">
             <option value="">-- اختر الفئة --</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
             @endforeach
         </select>
         <button wire:click="searchProducts"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-            بحث
+                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+            🔍 بحث
         </button>
     </div>
 
-    {{-- Error message --}}
-    @if($errorMessage)
-        <div class="mb-4 p-2 bg-red-100 text-red-700 rounded">
-            {{ $errorMessage }}
-        </div>
-    @endif
-
-    {{-- Products list --}}
-    @if($products && $products->count())
-        <h3 class="font-semibold mb-2">📦 المنتجات المرتبطة بالفئة</h3>
-        <ul class="mb-4">
-            @foreach($products as $product)
-                <li class="flex justify-between items-center border-b py-2">
-                    <span>{{ $product->name }} ({{ number_format($product->sale_price,2) }} ج)</span>
-
-                    <div class="flex gap-2 items-center">
-                        @if($product->stock > 0)
-                            <button class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
-                                    wire:click="addToInvoice({{ $product->id }})">
-                                أضف للفاتورة
-                            </button>
-                        @else
-                            <span class="text-red-500 text-sm">غير متاح بالمخزون</span>
-                        @endif
+    {{-- قائمة المنتجات للفئة --}}
+    @if($products && $selectedCategory && $products->count() > 0 && !$errorMessage)
+        <div class="mb-4">
+            <h3 class="font-bold mb-2">المنتجات:</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                @foreach($products as $p)
+                    <div class="border rounded p-2 flex justify-between items-center">
+                        <div>
+                            <div class="font-semibold">{{ $p->name }}</div>
+                            <div class="text-sm text-gray-500">{{ $p->model }}</div>
+                            <div class="text-sm">💵 {{ $p->sale_price }}</div>
+                        </div>
+                        <button wire:click="addToInvoice({{ $p->id }})"
+                                class="bg-blue-500 text-white px-3 py-1 rounded">
+                            إضافة
+                        </button>
                     </div>
-                </li>
-            @endforeach
-        </ul>
-    @elseif($selectedCategory)
-        <div class="text-gray-500 mb-4">
-            لا توجد منتجات لهذه الفئة.
-        </div>
-    @endif
-
-    {{-- Invoice items --}}
-    @if(count($invoiceItems))
-        <h3 class="font-semibold mb-2">📝 الفاتورة الحالية</h3>
-        <table class="w-full text-sm border">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="p-2">المنتج</th>
-                    <th class="p-2">الباركود</th>
-                    <th class="p-2">الكمية</th>
-                    <th class="p-2">السعر</th>
-                    <th class="p-2">الإجمالي</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($invoiceItems as $key => $item)
-                    <tr class="border-t">
-                        <td class="p-2">{{ $item['name'] }}</td>
-                        <td class="p-2">{{ $item['barcode'] ?? '-' }}</td>
-                        <td class="p-2">
-                            <input type="number" min="1"
-                                   class="w-16 text-center border rounded"
-                                   wire:change="updateQty('{{ $key }}', $event.target.value)"
-                                   value="{{ $item['qty'] }}">
-                        </td>
-                        <td class="p-2">
-                            <input type="number" step="0.01" min="0"
-                                   class="w-24 text-center border rounded"
-                                   wire:change="updatePrice('{{ $key }}', $event.target.value)"
-                                   value="{{ number_format($item['price'], 2) }}">
-                        </td>
-                        <td class="p-2">{{ number_format($item['price'] * $item['qty'], 2) }}</td>
-                        <td class="p-2 text-center">
-                            <button wire:click="removeItem('{{ $key }}')"
-                                    class="text-red-600 hover:underline">
-                                ×
-                            </button>
-                        </td>
-                    </tr>
                 @endforeach
-            </tbody>
-
-            <tfoot class="bg-gray-50 font-bold">
-                <tr>
-                    <td colspan="4" class="p-2 text-right">الإجمالي الكلي</td>
-                    <td colspan="2" class="p-2">{{ number_format($grandTotal,2) }} ج</td>
-                </tr>
-            </tfoot>
-        </table>
-
-        {{-- Customer name --}}
-        <div class="mt-4 mb-2">
-            <input type="text" wire:model.lazy="customerName"
-                   placeholder="اسم العميل (اختياري)"
-                   class="border rounded px-3 py-2 w-full">
+            </div>
         </div>
-
-        {{-- Submit invoice --}}
-        <button wire:click="submitInvoice"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mt-2">
-            💾 حفظ الفاتورة
-        </button>
     @endif
+
+    {{-- حالة وجود أكثر من منتج بنفس الباركود --}}
+    @if($products && $products->count() > 1 && $errorMessage)
+        <div class="mb-4 border p-3 rounded bg-gray-50">
+            <h3 class="font-bold mb-2">اختر المنتج الصحيح:</h3>
+            <table class="w-full border">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2">الاسم</th>
+                        <th class="p-2">الموديل</th>
+                        <th class="p-2">السعر</th>
+                        <th class="p-2">إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($products as $p)
+                        <tr class="border-b">
+                            <td class="p-2">{{ $p->name }}</td>
+                            <td class="p-2">{{ $p->model }}</td>
+                            <td class="p-2">{{ $p->sale_price }}</td>
+                            <td class="p-2">
+                                <button wire:click="addToInvoice({{ $p->id }})"
+                                        class="bg-blue-500 text-white px-3 py-1 rounded">
+                                    إضافة
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
+    {{-- جدول الفاتورة --}}
+    <div class="mt-6">
+        <h3 class="font-bold mb-2">🧾 تفاصيل الفاتورة</h3>
+        @if(empty($invoiceItems))
+            <div class="text-gray-500">لا توجد منتجات في الفاتورة.</div>
+        @else
+            <table class="w-full border">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="p-2">الاسم</th>
+                        <th class="p-2">الباركود</th>
+                        <th class="p-2">الكمية</th>
+                        <th class="p-2">السعر</th>
+                        <th class="p-2">الإجمالي</th>
+                        <th class="p-2">إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($invoiceItems as $key => $item)
+                        <tr class="border-b">
+                            <td class="p-2">{{ $item['name'] }}</td>
+                            <td class="p-2">{{ $item['barcode'] }}</td>
+                            <td class="p-2">
+                                <input type="number" min="1"
+                                       wire:change="updateQty({{ $key }}, $event.target.value)"
+                                       value="{{ $item['qty'] }}"
+                                       class="w-16 border rounded px-2 py-1">
+                            </td>
+                            <td class="p-2">
+                                <input type="number" step="0.01"
+                                       wire:change="updatePrice({{ $key }}, $event.target.value)"
+                                       value="{{ $item['price'] }}"
+                                       class="w-24 border rounded px-2 py-1">
+                            </td>
+                            <td class="p-2">{{ $item['price'] * $item['qty'] }}</td>
+                            <td class="p-2">
+                                <button wire:click="removeItem({{ $key }})"
+                                        class="bg-red-500 text-white px-3 py-1 rounded">
+                                    ❌ حذف
+                                </button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr class="font-bold bg-gray-100">
+                        <td colspan="4" class="p-2 text-right">الإجمالي الكلي:</td>
+                        <td colspan="2" class="p-2">{{ $grandTotal }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        @endif
+    </div>
+
+    {{-- زر الحفظ --}}
+    <div class="mt-6">
+        <button wire:click="submitInvoice"
+                class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+            ✅ حفظ الفاتورة
+        </button>
+    </div>
 </div>

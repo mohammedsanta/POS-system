@@ -6,6 +6,14 @@
         <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded">
             {{ session('success') }}
         </div>
+
+        {{-- اظهار الباركود بعد الحفظ --}}
+        @if(session('barcode'))
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded">
+                📌 الباركود الخاص بالمنتج: 
+                <strong>{{ session('barcode') }}</strong>
+            </div>
+        @endif
     @endif
 
     {{-- النموذج --}}
@@ -50,11 +58,11 @@
             @error('sale_price') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
         </div>
 
-            {{-- الكميه --}}
+        {{-- الكمية --}}
         <div>
-            <label class="block text-sm font-medium mb-1">الكميه</label>
-            <input type="number" step="0.01" wire:model="stock" class="w-full border rounded px-3 py-2">
-            @error('sale_price') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+            <label class="block text-sm font-medium mb-1">الكمية</label>
+            <input type="number" step="1" wire:model="stock" class="w-full border rounded px-3 py-2">
+            @error('stock') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
         </div>
 
         {{-- زر الحفظ --}}

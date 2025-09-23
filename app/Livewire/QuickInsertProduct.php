@@ -36,7 +36,7 @@ class QuickInsertProduct extends Component
             'name'           => 'required|string|max:255',
             'category_id'    => 'required|exists:categories,id',
             'supplier_id'    => 'nullable|exists:suppliers,id',
-            'barcode'        => 'required|string|max:255|unique:product_barcodes,barcode',
+            'barcode'        => 'required|string|max:255',
             'brand'          => 'nullable|string|max:255',
             'model'          => 'nullable|string|max:255',
             'purchase_price' => 'required|numeric|min:0',
