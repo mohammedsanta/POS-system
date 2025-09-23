@@ -33,7 +33,7 @@ class Product extends Model
 
     public function barcodes()
     {
-        return $this->hasMany(ProductBarcode::class);
+        return $this->hasMany(ProductBarcode::class, 'product_id');
     }
 
     public function category()

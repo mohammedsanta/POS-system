@@ -18,8 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('brand')->nullable();
             $table->string('model')->nullable();
-            $table->string('imei')->nullable();
+            $table->string('barcode')->nullable();
             $table->decimal('purchase_price',10,2);
+            $table->decimal('price',10,2);
             $table->decimal('sale_price',10,2);
             $table->integer('stock')->default(0);
             $table->text('description')->nullable();

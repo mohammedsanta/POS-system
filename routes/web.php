@@ -184,6 +184,13 @@ Route::middleware('owner')->group(function () {
 
     Route::resource('/admin/bookings', MobileBookingController::class);
 
+    // QuickInsertProduct
+    Route::get('/quick-insert-product', function () {
+        return view('admin.quick-insert-product');
+    })->name('quick-insert-product');
+
+
+
 
 });
 
@@ -192,4 +199,8 @@ Route::middleware('owner')->group(function () {
 // ============================
 Route::get('/home', function () {
     return view('welcome-login');
+});
+
+Route::get('/', function () {
+    return redirect('/home');
 });

@@ -41,7 +41,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::latest()->get();
+        // يجيب كل المنتجات ومعاها الباركود
+        $products = Product::with('barcodes')->latest()->get();
 
         return view('admin.products', compact('products'));
     }

@@ -25,7 +25,7 @@
                     <tr>
                         <th class="px-4 py-2 border">#</th>
                         <th class="px-4 py-2 border">الاسم</th>
-                        <th class="px-4 py-2 border">العلامة التجارية</th>
+                        <th class="px-4 py-2 border">هل له بار كود</th>
                         <th class="px-4 py-2 border">الفئة</th>
                         <th class="px-4 py-2 border">الموديل</th>
                         <th class="px-4 py-2 border">سعر الشراء</th>
@@ -40,7 +40,7 @@
                         <tr>
                             <td class="px-4 py-2 border">{{ $index + 1 }}</td>
                             <td class="px-4 py-2 border">{{ $product->name }}</td>
-                            <td class="px-4 py-2 border">{{ $product->brand ?? '-' }}</td>
+                            <td class="px-4 py-2 border">{{ $product->barcodes->isNotEmpty() ? 'نعم' : 'لا' }}</td>
                             <td class="px-4 py-2 border">{{ $product->category->name ?? '-' }}</td>
                             <td class="px-4 py-2 border">{{ $product->model ?? '-' }}</td>
                             <td class="px-4 py-2 border">{{ $product->purchase_price }}</td>
