@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Category;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -42,6 +43,29 @@ class InvoiceController extends Controller
 
         return view('admin.invoices.index', compact('invoices', 'deletedInvoices'));
     }
+
+        public function AdminIndex(Request $request)
+    {
+        $query = Invoice::query();
+
+        // فلتر حسب اليوم
+        if ($request->filled('day')) {
+            $day = Carbon::parse($request->day)->toDateString();
+            $query->whereDate('sold_at', $day);
+        }
+
+        // فلتر حسب الشهر
+        if ($request->filled('month')) {
+            $month = Carbon::parse($request->month);
+            $query->whereMonth('sold_at', $month->month)
+                  ->whereYear('sold_at', $month->year);
+        }
+
+        $invoices = $query->orderBy('sold_at', 'desc')->paginate(15);
+
+        return view('admin.invoices.all', compact('invoices'));
+    }
+
 
     public function show($invoice_number)
     {

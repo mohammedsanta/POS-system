@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\OtherInvoice;
 use App\Models\Product;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,22 @@ class OwnerDashboardController extends Controller
         $weeklyExpenses = (float) Expense::whereBetween('expense_date', [$startWeek, $endWeek])
             ->sum('amount');
 
-        $netWeek = $weeklySales - $weeklyReturns;
+        // إجمالي المبالغ اليوم
+        $otherInvoicesToday = OtherInvoice::whereDate('created_at', today())->sum('total');
+
+        // إجمالي المبالغ هذا الأسبوع
+        $otherInvoicesWeekly = OtherInvoice::whereBetween('created_at', [
+            now()->startOfWeek(),
+            now()->endOfWeek()
+        ])->sum('total');
+
+        // عدد الفواتير (لو محتاجه)
+        $otherInvoicesCountToday = OtherInvoice::whereDate('created_at', today())->count();
+        $otherInvoicesCountWeekly = OtherInvoice::whereBetween('created_at', [
+            now()->startOfWeek(),
+            now()->endOfWeek()
+        ])->count();
+
 
         // === Overall totals ===
         $totalSales = (float) Invoice::where('is_returned', false)->sum('total');
@@ -82,10 +98,13 @@ class OwnerDashboardController extends Controller
             'weeklySales',
             'weeklyReturns',
             'weeklyExpenses',
-            'netWeek',
             'totalSales',
             'lowStockCount',
-            'topProducts'
+            'topProducts',
+            'otherInvoicesToday',
+            'otherInvoicesWeekly',
+            'otherInvoicesCountToday',
+            'otherInvoicesCountWeekly',
         ));
     }
 

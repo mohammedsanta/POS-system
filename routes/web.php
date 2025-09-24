@@ -83,7 +83,6 @@ Route::middleware('auth:staff')->group(function () {
 
     // Start Invoices
 
-    Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
     Route::post('/invoices', [InvoiceController::class, 'store'])->name('invoices.store');
     Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
@@ -193,9 +192,9 @@ Route::middleware('owner')->group(function () {
 
     // restore invoices and admin view invoices
     // routes/web.php
-
+    Route::get('/admin/invoices', [InvoiceController::class, 'AdminIndex'])->name('admin.invoices.index');
     Route::get('/admin/invoices/show', [InvoiceController::class, 'adminViewInvoices'])->name('admin.view.invoices');
-    Route::post('/invoices/{id}/restore', [InvoiceController::class, 'restore'])->name('invoices.restore');
+    Route::post('/admin/invoices/{id}/restore', [InvoiceController::class, 'restore'])->name('invoices.restore');
 
 
 

@@ -8,7 +8,7 @@
         {{-- البطاقات (اليوم) --}}
         <section>
             <h2 class="text-2xl font-bold text-gray-800 mb-4">إحصائيات اليوم</h2>
-            <div class="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="grid sm:grid-cols-4 lg:grid-cols-5 gap-6">
                 <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المبيعات اليوم</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($salesToday, 2) }}</p>
@@ -23,13 +23,20 @@
                     <h3 class="text-lg font-semibold">المصروفات اليوم</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($expensesToday, 2) }}</p>
                 </div>
+
+                {{-- فواتير أخرى اليوم --}}
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
+                    <h3 class="text-lg font-semibold">فواتير أخرى اليوم</h3>
+                    <p class="text-xl font-bold mt-2">{{ $otherInvoicesCountToday }} فاتورة</p>
+                    <p class="text-2xl font-bold mt-1 text-green-700">ج.م {{ number_format($otherInvoicesToday, 2) }}</p>
+                </div>
             </div>
         </section>
 
         {{-- البطاقات (هذا الأسبوع) --}}
         <section>
             <h2 class="text-2xl font-bold text-gray-800 mb-4">إحصائيات الأسبوع</h2>
-            <div class="grid sm:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="grid sm:grid-cols-4 lg:grid-cols-5 gap-6">
                 <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المبيعات هذا الأسبوع</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($weeklySales, 2) }}</p>
@@ -43,6 +50,13 @@
                 <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
                     <h3 class="text-lg font-semibold">المصروفات هذا الأسبوع</h3>
                     <p class="text-3xl font-bold mt-2">ج.م {{ number_format($weeklyExpenses, 2) }}</p>
+                </div>
+
+                {{-- فواتير أخرى هذا الأسبوع --}}
+                <div class="bg-gray-200 text-gray-900 p-6 rounded-2xl shadow hover:shadow-lg transition">
+                    <h3 class="text-lg font-semibold">فواتير أخرى هذا الأسبوع</h3>
+                    <p class="text-xl font-bold mt-2">{{ $otherInvoicesCountWeekly }} فاتورة</p>
+                    <p class="text-2xl font-bold mt-1 text-green-700">ج.م {{ number_format($otherInvoicesWeekly, 2) }}</p>
                 </div>
             </div>
         </section>

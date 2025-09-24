@@ -39,6 +39,10 @@
                        class="{{ request()->routeIs('admin.view.invoices') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         ادارة المبيعات
                     </a>
+                    <a href="{{ route('admin.invoices.index') }}"
+                       class="{{ request()->routeIs('admin.invoices.index') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
+                        المبيعات
+                    </a>
                     <a href="{{ route('expenses.indexAdmin') }}"
                        class="{{ request()->routeIs('expenses.indexAdmin') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         المصاريف
