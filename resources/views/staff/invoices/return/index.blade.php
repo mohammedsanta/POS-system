@@ -55,7 +55,6 @@
                             <th class="px-4 py-3">#</th>
                             <th class="px-4 py-3">رقم الفاتورة</th>
                             <th class="px-4 py-3">اسم المنتج</th>
-                            <th class="px-4 py-3">الباركود</th>
                             <th class="px-4 py-3">الكمية المرتجعة</th>
                             <th class="px-4 py-3">تاريخ الإرجاع</th>
                         </tr>
@@ -66,7 +65,6 @@
                                 <td class="px-4 py-3">{{ $returnedItems->firstItem() + $idx }}</td>
                                 <td class="px-4 py-3 font-medium">{{ $item->invoice_number }}</td>
                                 <td class="px-4 py-3">{{ $item->product_name }}</td>
-                                <td class="px-4 py-3">{{ $item->barcode->barcode ?? '-' }}</td>
                                 <td class="px-4 py-3">{{ $item->qty }}</td>
                                 <td class="px-4 py-3">{{ $item->updated_at->format('Y-m-d H:i') }}</td>
                             </tr>

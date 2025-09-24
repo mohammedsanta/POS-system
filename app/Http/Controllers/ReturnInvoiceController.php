@@ -85,15 +85,13 @@ class ReturnInvoiceController extends Controller
                 return back()->with('error', 'هذا العنصر تم إرجاعه مسبقًا.');
             }
 
-            // إذا كان المنتج مربوط بباركود يجب تحريره
-            if ($item->barcode_id) {
-                $barcode = \App\Models\ProductBarcode::find($item->barcode_id);
-                if ($barcode) {
-                    $barcode->sold = false;
-                    $barcode->save();
-                }
+            // ✅ استرجاع المخزون (بما أن الباركود محفوظ في المنتج مباشرةً)
+            $product = \App\Models\Product::find($item->product_id);
+            if ($product) {
+                $product->increment('stock', $item->qty);
             }
 
+            // تحديث حالة العنصر كمرتجع
             $item->is_returned = true;
             $item->save();
 
@@ -107,6 +105,7 @@ class ReturnInvoiceController extends Controller
             return back()->with('error', 'حدث خطأ غير متوقع أثناء الإرجاع: ' . $e->getMessage());
         }
     }
+
 
     /** ✅ إرجاع الفاتورة بالكامل */
     public function returnInvoice($invoice_number)

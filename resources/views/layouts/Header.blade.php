@@ -39,8 +39,8 @@
                     سجل المبيعات
                 </a>
 
-                <a href="{{ route('barcodes.index') }}"
-                   class="text-gray-700 hover:text-green-600 font-medium {{ request()->routeIs('barcodes.index') ? 'text-green-600 font-semibold' : '' }}">
+                <a href="{{ route('products.search.form') }}"
+                   class="text-gray-700 hover:text-green-600 font-medium {{ request()->routeIs('products.search.form') ? 'text-green-600 font-semibold' : '' }}">
                     باركود المنتجات
                 </a>
 

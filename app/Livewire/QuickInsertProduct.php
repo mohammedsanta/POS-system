@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Product;
-use App\Models\ProductBarcode;
 use App\Models\Category;
 use App\Models\Supplier;
 
@@ -57,14 +56,6 @@ class QuickInsertProduct extends Component
             'sale_price'     => $this->sale_price,
             'stock'          => $this->stock,
             'description'    => $this->description,
-        ]);
-
-        // إضافة الباركود
-        ProductBarcode::create([
-            'product_id'  => $product->id,
-            'category_id' => $this->category_id,
-            'barcode'     => $this->barcode,
-            'quantity'    => 0,
         ]);
 
         session()->flash('success', '✅ تم إضافة المنتج بسرعة بنجاح');

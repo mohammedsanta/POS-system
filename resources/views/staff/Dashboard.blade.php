@@ -16,6 +16,12 @@
                 <p class="text-2xl font-bold text-green-600">EGP {{ number_format($totalSales, 2) }}</p>
             </div>
 
+            {{-- صندوق فواتير أخرى --}}
+            <div class="bg-white p-6 rounded shadow text-center">
+                <h4 class="text-lg font-semibold mb-2">فواتير أخرى اليوم</h4>
+                <p class="text-2xl font-bold text-purple-600">EGP {{ number_format($otherInvoicesTotal, 2) }}</p>
+            </div>
+
             <div class="bg-white p-6 rounded shadow text-center">
                 <h4 class="text-lg font-semibold mb-2">عدد الفواتير اليوم</h4>
                 <p class="text-2xl font-bold text-blue-600">{{ $invoiceCount }}</p>
@@ -39,7 +45,7 @@
         </div>
 
         {{-- جدول المبيعات اليوم --}}
-        <div class="bg-white p-6 rounded shadow">
+        <div class="bg-white p-6 rounded shadow mt-6">
             <h3 class="text-xl font-bold mb-4">مبيعات اليوم</h3>
 
             <table class="w-full text-sm text-left border">
@@ -53,6 +59,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {{-- المبيعات العادية --}}
                     @foreach($salesToday as $index => $sale)
                     <tr class="border-b">
                         <td class="py-2 px-4 border">{{ $index + 1 }}</td>
@@ -65,9 +72,21 @@
                         </td>
                     </tr>
                     @endforeach
+
+                    {{-- المبيعات الأخرى --}}
+                    @foreach($otherSalesToday as $otherIndex => $other)
+                    <tr class="border-b bg-purple-50">
+                        <td class="py-2 px-4 border">O-{{ $otherIndex + 1 }}</td>
+                        <td class="py-2 px-4 border">فاتورة أخرى</td>
+                        <td class="py-2 px-4 border">{{ $other->customer_name ?? '—' }}</td>
+                        <td class="py-2 px-4 border text-purple-600 font-bold">EGP {{ number_format($other->total, 2) }}</td>
+                        <td class="py-2 px-4 border text-purple-700 font-semibold">أخرى</td>
+                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
+
 
     </div>
 </main>

@@ -11,29 +11,31 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
 
-    // البحث بالتصنيف
-    public function getByCategory($categoryId)
+    // البحث بالباركود
+    // صفحة البحث
+    public function searchBarcodeForm()
     {
-        $products = Product::where('category_id', $categoryId)
-            ->select('id', 'name', 'sale_price', 'stock') // الحقول اللي محتاجها
-            ->orderBy('name')
-            ->get();
-
-        return response()->json($products);
+        return view('staff.ProductsBarcode');
     }
 
     // البحث بالباركود
-    public function getByBarcode($barcode)
+    public function searchBarcode(Request $request)
     {
-        $product = ProductBarcode::where('barcode', $barcode)
-            ->select('id', 'barcode')
-            ->first();
+        $request->validate([
+            'barcode' => 'required|string|max:255',
+        ]);
+
+        $barcode = $request->barcode;
+
+        // البحث مباشرة في جدول المنتجات
+        $product = Product::where('barcode', $barcode)->first();
 
         if (!$product) {
-            return response()->json(['message' => 'المنتج غير موجود'], 404);
+            return back()->with('error', '🚫 لم يتم العثور على منتج بهذا الباركود');
         }
 
-        return response()->json($product);
+        return back()->with('success', '✅ تم العثور على المنتج')
+                     ->with('product', $product);
     }
 
     /**

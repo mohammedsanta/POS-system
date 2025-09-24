@@ -26,11 +26,14 @@ class InvoiceCreate extends Component
         $this->invoiceItems = [];
     }
 
-    private function getNextInvoiceNumber(): int
+    private function getNextInvoiceNumber(): string
     {
-        $last = Invoice::orderByDesc('invoice_number')->first();
-        return $last ? $last->invoice_number + 1 : 1;
+        $last = Invoice::withTrashed()->max('id'); // id دايمًا unique
+        $next = $last ? $last + 1 : 1;
+
+        return 'INV-' . str_pad($next, 6, '0', STR_PAD_LEFT);
     }
+
 
     /** البحث حسب الفئة */
     public function searchProducts()

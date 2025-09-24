@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>نظام نقاط البيع - الصفحة الرئيسية</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="{{ asset('css/tailwind.min.css') }}" rel="stylesheet">
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-700 flex items-center justify-center">
 

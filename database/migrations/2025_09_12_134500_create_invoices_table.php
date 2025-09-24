@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
-            $table->foreignId('barcode_id')->nullable()->constrained('product_barcodes')->cascadeOnDelete();
-            $table->integer('invoice_number')->unique();
+            $table->string('invoice_number');
             $table->string('product_name');             // اسم المنتج
             $table->string('customer_name')->nullable();// اسم العميل (اختياري)
             $table->integer('qty')->default(1);         // الكمية
@@ -24,6 +23,7 @@ return new class extends Migration
             $table->decimal('total',12,2);              // إجمالي = qty × price
             $table->timestamp('sold_at')->useCurrent(); // وقت البيع
             $table->boolean('is_returned')->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

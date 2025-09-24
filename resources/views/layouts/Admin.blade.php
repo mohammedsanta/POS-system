@@ -35,6 +35,10 @@
                        class="{{ request()->routeIs('admin.dashboard') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         الرئيسية
                     </a>
+                    <a href="{{ route('admin.view.invoices') }}"
+                       class="{{ request()->routeIs('admin.view.invoices') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
+                        ادارة المبيعات
+                    </a>
                     <a href="{{ route('expenses.indexAdmin') }}"
                        class="{{ request()->routeIs('expenses.indexAdmin') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         المصاريف
@@ -67,15 +71,10 @@
                        class="{{ request()->routeIs('admin.cashier') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         الكاشير
                     </a>
-                    <a href="{{ route('admin.products.barcodes') }}"
-                       class="{{ request()->routeIs('admin.products.barcodes') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
-                        الباركود
-                    </a>
                     <a href="{{ route('admin.product-inventory') }}"
                        class="{{ request()->routeIs('admin.product-inventory') ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600' }}">
                         الجرد
                     </a>
-
                 </nav>
 
                 {{-- الجانب الأيمن --}}

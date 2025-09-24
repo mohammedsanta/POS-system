@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\OtherInvoice;
 use App\Models\Staff;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -22,6 +23,11 @@ class CashierController extends Controller
 
     // إجمالي المبيعات قبل خصم المرتجعات
     $totalSalesRaw = Invoice::whereDate('sold_at', $today)->sum('total');
+    // 🔹 إحصائية الفواتير الأخرى
+    $otherInvoicesTotal = OtherInvoice::whereDate('created_at', today())->sum('total');
+    // مبيعات أخرى اليوم
+    $otherSalesToday = OtherInvoice::whereDate('created_at', $today)->get();
+
 
     // مجموع المنتجات المرتجعة
     $totalReturned = Invoice::whereDate('sold_at', $today)
@@ -64,11 +70,13 @@ class CashierController extends Controller
         })
         ->flatten();
 
-    $expensesToday = Expense::whereDate('expense_date', today())->sum('amount');
+        $expensesToday = Expense::whereDate('expense_date', today())->sum('amount');
 
 
         return view('staff.dashboard', compact(
             'totalSales',
+            'otherInvoicesTotal',
+            'otherSalesToday',
             'invoiceCount',
             'returnedCount',
             'totalReturned',

@@ -35,6 +35,13 @@ class InvoiceController extends Controller
         return view('staff.invoices.index', compact('invoices'));
     }
 
+    public function adminViewInvoices()
+    {
+        $invoices = Invoice::latest()->get();
+        $deletedInvoices = Invoice::onlyTrashed()->latest()->get();
+
+        return view('admin.invoices.index', compact('invoices', 'deletedInvoices'));
+    }
 
     public function show($invoice_number)
     {
@@ -76,36 +83,31 @@ class InvoiceController extends Controller
     }
 
     /**
-     * صفحة تعديل فاتورة
-     */
-    public function edit(Invoice $invoice)
-    {
-        $products   = Product::all();
-        $categories = Category::all();
-
-        return view('invoices.create', compact('invoice', 'products', 'categories'));
-    }
-
-    /**
      * تحديث الفاتورة
      */
     public function update(Request $request, Invoice $invoice)
     {
-        $validated = $request->validate([
-            'product_id'    => 'required|exists:products,id',
-            'category_id'   => 'required|exists:categories,id',
-            'product_name'  => 'required|string|max:255',
-            'customer_name' => 'nullable|string|max:255',
-            'qty'           => 'required|integer|min:1',
-            'price'         => 'required|numeric|min:0',
+        $request->validate([
+            'invoice_number' => 'required|numeric|unique:invoices,invoice_number,' . $invoice->id,
+            'product_id'     => 'required|exists:products,id',
+            'category_id'    => 'required|exists:categories,id',
+            'qty'            => 'required|integer|min:1',
+            'price'          => 'required|numeric|min:0',
+            'customer_name'  => 'nullable|string|max:255',
         ]);
 
-        $validated['total'] = $validated['qty'] * $validated['price'];
+        $invoice->update([
+            'invoice_number' => $request->invoice_number,
+            'product_id'     => $request->product_id,
+            'category_id'    => $request->category_id,
+            'customer_name'  => $request->customer_name,
+            'qty'            => $request->qty,
+            'price'          => $request->price,
+            'total'          => $request->qty * $request->price,
+        ]);
 
-        $invoice->update($validated);
-
-        return redirect()->route('invoices.index')
-            ->with('success', 'Invoice updated successfully.');
+        return redirect()->route('admin.invoices.edit', $invoice->id)
+                         ->with('success', 'تم تعديل الفاتورة بنجاح ✅');
     }
 
     /**
@@ -115,7 +117,15 @@ class InvoiceController extends Controller
     {
         $invoice->delete();
 
-        return redirect()->route('invoices.index')
+        return redirect()->route('admin.view.invoices')
             ->with('success', 'Invoice deleted successfully.');
+    }
+
+    public function restore($id)
+    {
+        $invoice = Invoice::onlyTrashed()->findOrFail($id);
+        $invoice->restore();
+
+        return redirect()->route('admin.view.invoices')->with('success', 'تم استرجاع الفاتورة بنجاح');
     }
 }

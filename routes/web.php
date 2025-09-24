@@ -57,17 +57,19 @@ Route::middleware('guest:staff')->group(function () {
 Route::middleware('auth:staff')->group(function () {
     Route::post('/staff/logout', [StaffAuthController::class, 'logout'])->name('staff.logout');
     Route::get('/cashier/dashboard', [CashierController::class, 'dashboard'])->name('cashier.dashboard');
-    Route::get('/barcodes', [ProductBarcodeController::class, 'staffIndex'])->name('barcodes.index');
+    // search by barcode
+    Route::get('/search-barcode', [ProductController::class, 'searchBarcodeForm'])->name('products.search.form');
+    Route::post('/search-barcode', [ProductController::class, 'searchBarcode'])->name('products.search');
 
-    Route::resource('/other-invoices', OtherInvoicesController::class)->names([
-        'index'   => 'other.invoices.index',
-        'create'  => 'other.invoices.create',
-        'store'   => 'other.invoices.store',
-        'show'    => 'other.invoices.show',
-        'edit'    => 'other.invoices.edit',
-        'update'  => 'other.invoices.update',
-        'destroy' => 'other.invoices.destroy',
-    ]);
+    Route::prefix('staff/invoices/other')->name('other.invoices.')->group(function () {
+        Route::get('/', [OtherInvoicesController::class, 'index'])->name('index');
+        Route::get('/create', [OtherInvoicesController::class, 'create'])->name('create');
+        Route::post('/', [OtherInvoicesController::class, 'store'])->name('store');
+        Route::get('/{otherInvoice}', [OtherInvoicesController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [OtherInvoicesController::class, 'edit'])->name('edit');
+        Route::put('/{otherInvoice}', [OtherInvoicesController::class, 'update'])->name('update');
+        Route::delete('/{otherInvoice}', [OtherInvoicesController::class, 'destroy'])->name('destroy');
+    });
 
     Route::resource('expenses', ExpenseController::class)->names([
         'index'   => 'expenses.index',
@@ -139,15 +141,15 @@ Route::middleware('owner')->group(function () {
     Route::delete('/admin/cashier/{cashier}', [CashierController::class, 'destroy'])->name('cashiers.destroy');
     // end cashier
     // start barcode
-    Route::get('/product-barcodes', [ProductBarcodeController::class, 'index'])->name('admin.products.barcodes');
-    Route::get('/product-barcodes/create', [ProductBarcodeController::class, 'create'])->name('admin.products.barcode.add');
-    Route::post('/product-barcodes', [ProductBarcodeController::class, 'store'])->name('barcodes.store');
-    Route::get('/product-barcodes/{barcode}/edit', [ProductBarcodeController::class, 'edit'])->name('admin.products.barcode.edit');
-    Route::put('/product-barcodes/{barcode}', [ProductBarcodeController::class, 'update'])->name('barcodes.update');
-    Route::delete('/product-barcodes/{barcode}', [ProductBarcodeController::class, 'destroy'])->name('barcodes.destroy');
+    // Route::get('/product-barcodes', [ProductBarcodeController::class, 'index'])->name('admin.products.barcodes');
+    // Route::get('/product-barcodes/create', [ProductBarcodeController::class, 'create'])->name('admin.products.barcode.add');
+    // Route::post('/product-barcodes', [ProductBarcodeController::class, 'store'])->name('barcodes.store');
+    // Route::get('/product-barcodes/{barcode}/edit', [ProductBarcodeController::class, 'edit'])->name('admin.products.barcode.edit');
+    // Route::put('/product-barcodes/{barcode}', [ProductBarcodeController::class, 'update'])->name('barcodes.update');
+    // Route::delete('/product-barcodes/{barcode}', [ProductBarcodeController::class, 'destroy'])->name('barcodes.destroy');
     // new
-    Route::get('/increase-quantity', [ProductBarcodeController::class, 'showForm'])->name('barcode.increase');
-    Route::post('/increase-quantity', [ProductBarcodeController::class, 'increaseQuantity']);
+    // Route::get('/increase-quantity', [ProductBarcodeController::class, 'showForm'])->name('barcode.increase');
+    // Route::post('/increase-quantity', [ProductBarcodeController::class, 'increaseQuantity']);
     // end barcode
     // Start Purchases
     Route::get('/admin/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
@@ -189,6 +191,11 @@ Route::middleware('owner')->group(function () {
     //     return view('admin.quick-insert-product');
     // })->name('quick-insert-product');
 
+    // restore invoices and admin view invoices
+    // routes/web.php
+
+    Route::get('/admin/invoices/show', [InvoiceController::class, 'adminViewInvoices'])->name('admin.view.invoices');
+    Route::post('/invoices/{id}/restore', [InvoiceController::class, 'restore'])->name('invoices.restore');
 
 
 
